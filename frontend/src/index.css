@@ -1,1 +1,36 @@
 @import "tailwindcss";
+@keyframes fadeSlide {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeSlide {
+  animation: fadeSlide 0.8s ease-out forwards;
+}
+
+/* Section fade-in */
+.animate-section {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeSlide 1s ease forwards;
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 10px;
+}
+
+.section-body {
+  max-width: 700px;
+  font-size: 1rem;
+  color: #4b5563;
+  line-height: 1.6;
+}
