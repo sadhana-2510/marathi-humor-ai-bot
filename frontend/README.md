@@ -1,16 +1,102 @@
-# React + Vite
+🌐 Marathi–English Humor AI Bot
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A Context-Aware Conversational AI for Humor Detection & Generation
 
-Currently, two official plugins are available:
+📘 Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This project presents a bilingual AI system capable of detecting humor, sarcasm, and playful expressions in Marathi, English, and code-mixed text or speech.
+It also aims to generate culturally appropriate Marathi humor and provide a clean, modern user interface for interaction.
 
-## React Compiler
+The work combines Speech Recognition, NLP, Deep Learning, and Full-Stack Development, forming a complete humor-aware conversational AI pipeline.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+🎯 Key Features
 
-## Expanding the ESLint configuration
+Humor & Sarcasm Classification (Marathi + Code-Mixed Inputs)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Speech-to-Text Integration (Marathi STT)
+
+Conversational Chat Interface
+
+Visual Humor Analytics (Upcoming)
+
+Generative Humor (Phase-3)
+
+Modern React UI with Tailwind CSS
+
+FastAPI Backend for ML Inference
+
+🛠 Tech Stack
+Frontend
+
+React
+
+Vite
+
+Tailwind CSS
+
+Backend
+
+FastAPI
+
+Python
+
+Model Training
+
+IndicBERT / mBERT
+
+PyTorch
+
+Whisper / Google STT
+
+HuggingFace Transformers
+
+📁 Project Structure
+marathi-humor-bot/
+│
+├── frontend/           # React UI      
+├── backend/            # FastAPI server + ML inference
+├── dataset/            # Jokes, non-jokes, speech samples
+├── model-training/     # Jupyter notebooks and training scripts
+└── README.md
+
+▶️ How to Run the Project
+Frontend
+cd frontend
+npm install
+npm run dev
+
+Backend
+cd backend
+pip install -r requirements.txt
+uvicorn main:app --reload
+
+👥 Team
+Sadhana M
+
+Frontend Developer & System Integrator
+
+Developed complete UI using React + Tailwind
+
+Designed landing, login, demo modals, and full app navigation
+
+Will build analytics dashboards and chat interface
+
+Integrates backend APIs with frontend
+
+Jermi Altrina J
+
+Machine Learning Engineer
+
+Dataset creation and preprocessing
+
+Humor/sarcasm classifier model training
+
+Speech-to-text pipeline integration
+
+FastAPI backend model serving
+
+🎓 Institution
+
+Chennai Institute of Technology
+Department of Computer Science Engineering (CSE)
+Guide: Ms. Bhavani Ramesh
