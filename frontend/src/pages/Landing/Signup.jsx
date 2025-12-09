@@ -1,112 +1,172 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import AuthLayout from "../../components/AuthLayout";
 
 export default function Signup() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
+    name: "",
     email: "",
     password: "",
-    confirmPassword: "",
   });
 
   const [errors, setErrors] = useState({});
-  const [showPass, setShowPass] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const validate = () => {
+  // ------------------------------
+  // VALIDATION FUNCTIONS
+  // ------------------------------
+  const validateEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const validatePassword = (password) => {
+    if (password.length < 8) return "Minimum 8 characters required";
+    if (!/[A-Z]/.test(password)) return "Include at least one uppercase letter";
+    if (!/[a-z]/.test(password)) return "Include at least one lowercase letter";
+    if (!/[0-9]/.test(password)) return "Include at least one number";
+    if (!/[!@#$%^&*()_+\-=[\]{};:'",.<>/?]/.test(password))
+      return "Include at least one special character";
+    if (password === "00000000") return "Password cannot be all zeros";
+    if (password === "11111111") return "Password cannot be all ones";
+    if (/\s/.test(password)) return "No spaces allowed";
+
+    return "";
+  };
+
+  // ------------------------------
+  // HANDLE INPUT CHANGE
+  // ------------------------------
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  // ------------------------------
+  // HANDLE SUBMIT
+  // ------------------------------
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
     let newErrors = {};
 
-    if (!form.email.includes("@") || !form.email.includes(".")) {
-      newErrors.email = "Please enter a valid email address.";
-    }
-    if (form.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters.";
-    }
-    if (form.password !== form.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match.";
-    }
+    // Validate all fields
+    if (!form.name.trim()) newErrors.name = "Name is required";
+    if (!validateEmail(form.email)) newErrors.email = "Invalid email format";
+    const passwordCheck = validatePassword(form.password);
+    if (passwordCheck) newErrors.password = passwordCheck;
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+
+    if (Object.keys(newErrors).length > 0) return;
+
+    // ------------------------------
+    // CALL BACKEND /signup
+    // ------------------------------
+    setLoading(true);
+
+    try {
+      const res = await fetch("http://localhost:8000/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setErrors({ submit: data.detail || "Signup failed" });
+        setLoading(false);
+        return;
+      }
+
+      alert("Signup successful! Please log in.");
+      navigate("/login");
+    } catch (error) {
+      setErrors({ submit: "Server error. Try again later." });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSignup = (e) => {
-    e.preventDefault();
-    if (!validate()) return;
-
-    alert("Signup successful!");
-    navigate("/login");
-  };
-
+  // ------------------------------
+  // UI
+  // ------------------------------
   return (
-    <AuthLayout title="Create Account">
-      <form className="space-y-5" onSubmit={handleSignup}>
-        
-        {/* Email */}
-        <div>
-          <label className="text-sm font-medium">Email</label>
-          <input
-            type="email"
-            className="mt-1 w-full px-4 py-2 rounded-lg bg-white/60 border border-gray-300 focus:ring-2 focus:ring-purple-400"
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-          />
-          {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
-        </div>
+    <div className="min-h-screen flex items-center justify-center px-6 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700">
+      <div className="w-full max-w-md bg-white/10 backdrop-blur-2xl shadow-2xl rounded-3xl p-10 border border-white/20">
 
-        {/* Password */}
-        <div>
-          <label className="text-sm font-medium">Password</label>
+        <h1 className="text-3xl font-bold text-white mb-2">Create Account</h1>
+        <p className="text-gray-300 mb-6">Sign up to continue</p>
 
-          <div className="relative">
+        {errors.submit && (
+          <p className="text-red-400 text-sm mb-4">{errors.submit}</p>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+
+          {/* NAME */}
+          <div>
+            <label className="text-gray-200 text-sm">Full Name</label>
             <input
-              type={showPass ? "text" : "password"}
-              className="mt-1 w-full px-4 py-2 rounded-lg bg-white/60 border border-gray-300 focus:ring-2 focus:ring-purple-400"
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              name="name"
+              type="text"
+              value={form.name}
+              onChange={handleChange}
+              className="w-full mt-1 px-4 py-2 rounded-xl bg-white/20 text-white border border-white/30 focus:ring-2 focus:ring-indigo-400 outline-none"
+              placeholder="Your name"
             />
-
-            <button
-              type="button"
-              className="absolute right-3 top-3 text-sm text-gray-600"
-              onClick={() => setShowPass(!showPass)}
-            >
-              {showPass ? "Hide" : "Show"}
-            </button>
+            {errors.name && <p className="text-red-400 text-xs">{errors.name}</p>}
           </div>
 
-          {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
-        </div>
+          {/* EMAIL */}
+          <div>
+            <label className="text-gray-200 text-sm">Email</label>
+            <input
+              name="email"
+              type="email"
+              value={form.email}
+              onChange={handleChange}
+              className="w-full mt-1 px-4 py-2 rounded-xl bg-white/20 text-white border border-white/30 focus:ring-2 focus:ring-indigo-400 outline-none"
+              placeholder="you@example.com"
+            />
+            {errors.email && <p className="text-red-400 text-xs">{errors.email}</p>}
+          </div>
 
-        {/* Confirm Password */}
-        <div>
-          <label className="text-sm font-medium">Confirm Password</label>
-          <input
-            type="password"
-            className="mt-1 w-full px-4 py-2 rounded-lg bg-white/60 border border-gray-300 focus:ring-2 focus:ring-purple-400"
-            value={form.confirmPassword}
-            onChange={(e) =>
-              setForm({ ...form, confirmPassword: e.target.value })
-            }
-          />
-          {errors.confirmPassword && (
-            <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>
-          )}
-        </div>
+          {/* PASSWORD */}
+          <div>
+            <label className="text-gray-200 text-sm">Password</label>
+            <input
+              name="password"
+              type="password"
+              value={form.password}
+              onChange={handleChange}
+              className="w-full mt-1 px-4 py-2 rounded-xl bg-white/20 text-white border border-white/30 focus:ring-2 focus:ring-indigo-400 outline-none"
+              placeholder="********"
+            />
+            {errors.password && (
+              <p className="text-red-400 text-xs">{errors.password}</p>
+            )}
+          </div>
 
-        <button
-          type="submit"
-          className="w-full py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
-        >
-          Sign Up
-        </button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 rounded-xl font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md hover:shadow-lg transition-all"
+          >
+            {loading ? "Creating..." : "Sign Up"}
+          </button>
+        </form>
 
-        <p className="text-center text-sm text-gray-700">
+        <p className="text-gray-300 text-sm mt-4 text-center">
           Already have an account?{" "}
-          <Link to="/login" className="text-purple-700 font-medium">Login</Link>
+          <Link to="/login" className="text-indigo-400 hover:underline">
+            Log in
+          </Link>
         </p>
-      </form>
-    </AuthLayout>
+      </div>
+    </div>
   );
 }
